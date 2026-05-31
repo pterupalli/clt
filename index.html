@@ -1256,57 +1256,73 @@ const SKILLS = [
 ];
 
 // DEFAULT STARTER TASKS (12-month plan)
+// MONTH_OFFSET: plan starts June 2026 (month index 5 = June)
+// Month 1 = Jun 2026, Month 2 = Jul 2026 ... Month 12 = May 2027
+const PLAN_START_MONTH = 5; // 0-indexed: 5 = June
+const PLAN_START_YEAR  = 2026;
+function planMonthName(m) {
+  // m is 1-indexed plan month
+  const d = new Date(PLAN_START_YEAR, PLAN_START_MONTH + (m - 1), 1);
+  return d.toLocaleString('default', { month: 'long', year: 'numeric' });
+}
+function planMonthShort(m) {
+  const d = new Date(PLAN_START_YEAR, PLAN_START_MONTH + (m - 1), 1);
+  return d.toLocaleString('default', { month: 'short' });
+}
+
 const DEFAULT_TASKS = [
-  // Month 1
-  { id:'t1',  name:'MS-900 Study: M365 Fundamentals',      cat:'azure',    pri:'high',   month:1,  hours:20, done:false, date:'2026-01-31', notes:'Focus on licensing, security, compliance basics.', links:'' },
-  { id:'t2',  name:'MS-900 Certification Exam',             cat:'azure',    pri:'high',   month:1,  hours:2,  done:false, date:'2026-01-28', notes:'Exam voucher from Microsoft Learn.', links:'' },
-  { id:'t3',  name:'Japanese: Hiragana & Katakana mastery', cat:'japanese', pri:'high',   month:1,  hours:15, done:false, date:'', notes:'Anki deck + writing drills.', links:'https://ankiweb.net' },
-  { id:'t4',  name:'Linux: Bash scripting basics',          cat:'linux',    pri:'medium', month:1,  hours:8,  done:false, date:'', notes:'', links:'' },
-  // Month 2
-  { id:'t5',  name:'MS-102 Study: Identity & Access',       cat:'azure',    pri:'high',   month:2,  hours:25, done:false, date:'', notes:'Entra ID, Conditional Access, Intune.', links:'' },
-  { id:'t6',  name:'Japanese: Basic N5 Grammar',            cat:'japanese', pri:'high',   month:2,  hours:12, done:false, date:'', notes:'Genki I chapters 1-5.', links:'' },
-  { id:'t7',  name:'Python: Automate the Boring Stuff',     cat:'python',   pri:'medium', month:2,  hours:10, done:false, date:'', notes:'Focus on file I/O and scripting.', links:'https://automatetheboringstuff.com' },
-  // Month 3
-  { id:'t8',  name:'MS-102 Certification Exam',             cat:'azure',    pri:'high',   month:3,  hours:3,  done:false, date:'', notes:'', links:'' },
-  { id:'t9',  name:'AZ-104 Study: Azure Core Resources',    cat:'azure',    pri:'high',   month:3,  hours:20, done:false, date:'', notes:'VMs, Storage, VNets, Resource Groups.', links:'https://docs.microsoft.com' },
-  { id:'t10', name:'Japanese: N5 Vocabulary 800 words',     cat:'japanese', pri:'high',   month:3,  hours:15, done:false, date:'', notes:'Anki Genki deck.', links:'' },
-  { id:'t11', name:'CompTIA Net+ Study: Network Basics',    cat:'linux',    pri:'medium', month:3,  hours:15, done:false, date:'', notes:'', links:'' },
-  // Month 4
-  { id:'t12', name:'AZ-104 Study: Identity & Governance',   cat:'azure',    pri:'high',   month:4,  hours:18, done:false, date:'', notes:'', links:'' },
-  { id:'t13', name:'Python: Azure SDK Automation Scripts',  cat:'python',   pri:'medium', month:4,  hours:12, done:false, date:'', notes:'Automate VM start/stop, resource reports.', links:'' },
-  { id:'t14', name:'Portfolio: Azure Automation Project',   cat:'portfolio',pri:'medium', month:4,  hours:10, done:false, date:'', notes:'Push to GitHub with README.', links:'https://github.com' },
-  // Month 5
-  { id:'t15', name:'AZ-104 Certification Exam',             cat:'azure',    pri:'high',   month:5,  hours:3,  done:false, date:'', notes:'', links:'' },
-  { id:'t16', name:'AWS SAA-C03: Cloud Fundamentals',       cat:'aws',      pri:'high',   month:5,  hours:20, done:false, date:'', notes:'EC2, S3, IAM, VPC basics.', links:'https://aws.amazon.com/training' },
-  { id:'t17', name:'Japanese: Genki I Complete',            cat:'japanese', pri:'high',   month:5,  hours:20, done:false, date:'', notes:'', links:'' },
-  // Month 6
-  { id:'t18', name:'AWS SAA-C03: Architecture Deep Dive',   cat:'aws',      pri:'high',   month:6,  hours:25, done:false, date:'', notes:'Load balancers, Auto Scaling, RDS, CloudFront.', links:'' },
-  { id:'t19', name:'CompTIA Network+ Exam',                 cat:'linux',    pri:'medium', month:6,  hours:3,  done:false, date:'', notes:'', links:'' },
-  { id:'t20', name:'Portfolio: AWS 3-Tier Web App',         cat:'portfolio',pri:'high',   month:6,  hours:20, done:false, date:'', notes:'EC2 + RDS + ALB. Document architecture.', links:'' },
-  // Month 7
-  { id:'t21', name:'AWS SAA-C03 Certification Exam',        cat:'aws',      pri:'high',   month:7,  hours:3,  done:false, date:'', notes:'', links:'' },
-  { id:'t22', name:'JLPT N5 Exam Registration & Prep',      cat:'japanese', pri:'high',   month:7,  hours:20, done:false, date:'', notes:'December exam registration opens mid-year.', links:'' },
-  { id:'t23', name:'Linux: Networking & Firewall (UFW)',     cat:'linux',    pri:'medium', month:7,  hours:10, done:false, date:'', notes:'', links:'' },
-  // Month 8
-  { id:'t24', name:'Python: Infrastructure as Code (Boto3)',cat:'python',   pri:'high',   month:8,  hours:15, done:false, date:'', notes:'Automate AWS resource provisioning.', links:'https://boto3.amazonaws.com' },
-  { id:'t25', name:'Portfolio: Terraform Basic IaC Project',cat:'portfolio',pri:'medium', month:8,  hours:15, done:false, date:'', notes:'Deploy AWS infra with Terraform.', links:'https://terraform.io' },
-  { id:'t26', name:'Japanese: Genki II Chapters 1-6',       cat:'japanese', pri:'high',   month:8,  hours:18, done:false, date:'', notes:'', links:'' },
-  // Month 9
+  // Month 1 — June 2026
+  { id:'t1',  name:'MS-900 Study: M365 Fundamentals',       cat:'azure',    pri:'high',   month:1,  hours:20, done:false, date:'2026-06-28', notes:'Focus on licensing, security, compliance basics.', links:'' },
+  { id:'t2',  name:'MS-900 Certification Exam',              cat:'azure',    pri:'high',   month:1,  hours:2,  done:false, date:'2026-06-30', notes:'Exam voucher from Microsoft Learn.', links:'' },
+  { id:'t3',  name:'Japanese: Hiragana & Katakana mastery',  cat:'japanese', pri:'high',   month:1,  hours:15, done:false, date:'2026-06-30', notes:'Anki deck + writing drills.', links:'https://ankiweb.net' },
+  { id:'t4',  name:'Linux: Bash scripting basics',           cat:'linux',    pri:'medium', month:1,  hours:8,  done:false, date:'', notes:'', links:'' },
+  // Month 2 — July 2026
+  { id:'t5',  name:'MS-102 Study: Identity & Access',        cat:'azure',    pri:'high',   month:2,  hours:25, done:false, date:'2026-07-28', notes:'Entra ID, Conditional Access, Intune.', links:'' },
+  { id:'t6',  name:'Japanese: Basic N5 Grammar',             cat:'japanese', pri:'high',   month:2,  hours:12, done:false, date:'', notes:'Genki I chapters 1-5.', links:'' },
+  { id:'t7',  name:'Python: Automate the Boring Stuff',      cat:'python',   pri:'medium', month:2,  hours:10, done:false, date:'', notes:'Focus on file I/O and scripting.', links:'https://automatetheboringstuff.com' },
+  // Month 3 — August 2026
+  { id:'t8',  name:'MS-102 Certification Exam',              cat:'azure',    pri:'high',   month:3,  hours:3,  done:false, date:'2026-08-29', notes:'', links:'' },
+  { id:'t9',  name:'AZ-104 Study: Azure Core Resources',     cat:'azure',    pri:'high',   month:3,  hours:20, done:false, date:'', notes:'VMs, Storage, VNets, Resource Groups.', links:'https://docs.microsoft.com' },
+  { id:'t10', name:'Japanese: N5 Vocabulary 800 words',      cat:'japanese', pri:'high',   month:3,  hours:15, done:false, date:'', notes:'Anki Genki deck.', links:'' },
+  { id:'t11', name:'CompTIA Net+ Study: Network Basics',     cat:'linux',    pri:'medium', month:3,  hours:15, done:false, date:'', notes:'', links:'' },
+  // Month 4 — September 2026
+  { id:'t12', name:'AZ-104 Study: Identity & Governance',    cat:'azure',    pri:'high',   month:4,  hours:18, done:false, date:'', notes:'', links:'' },
+  { id:'t13', name:'Python: Azure SDK Automation Scripts',   cat:'python',   pri:'medium', month:4,  hours:12, done:false, date:'', notes:'Automate VM start/stop, resource reports.', links:'' },
+  { id:'t14', name:'Portfolio: Azure Automation Project',    cat:'portfolio',pri:'medium', month:4,  hours:10, done:false, date:'', notes:'Push to GitHub with README.', links:'https://github.com' },
+  // Month 5 — October 2026
+  { id:'t15', name:'AZ-104 Certification Exam',              cat:'azure',    pri:'high',   month:5,  hours:3,  done:false, date:'2026-10-31', notes:'', links:'' },
+  { id:'t16', name:'AWS SAA-C03: Cloud Fundamentals',        cat:'aws',      pri:'high',   month:5,  hours:20, done:false, date:'', notes:'EC2, S3, IAM, VPC basics.', links:'https://aws.amazon.com/training' },
+  { id:'t17', name:'Japanese: Genki I Complete',             cat:'japanese', pri:'high',   month:5,  hours:20, done:false, date:'', notes:'', links:'' },
+  { id:'t17b',name:'JLPT N5 Exam Registration',              cat:'japanese', pri:'high',   month:5,  hours:1,  done:false, date:'2026-10-15', notes:'Registration for December JLPT N5 closes mid-October.', links:'https://www.jlpt.jp' },
+  // Month 6 — November 2026
+  { id:'t18', name:'AWS SAA-C03: Architecture Deep Dive',    cat:'aws',      pri:'high',   month:6,  hours:25, done:false, date:'', notes:'Load balancers, Auto Scaling, RDS, CloudFront.', links:'' },
+  { id:'t19', name:'CompTIA Network+ Exam',                  cat:'linux',    pri:'medium', month:6,  hours:3,  done:false, date:'2026-11-29', notes:'', links:'' },
+  { id:'t20', name:'Portfolio: AWS 3-Tier Web App',          cat:'portfolio',pri:'high',   month:6,  hours:20, done:false, date:'', notes:'EC2 + RDS + ALB. Document architecture.', links:'' },
+  { id:'t20b',name:'Japanese: JLPT N5 Full Mock Exams',      cat:'japanese', pri:'high',   month:6,  hours:15, done:false, date:'', notes:'Min 3 full mock exams before December exam.', links:'' },
+  // Month 7 — December 2026
+  { id:'t21', name:'JLPT N5 Examination',                    cat:'japanese', pri:'high',   month:7,  hours:1,  done:false, date:'2026-12-06', notes:'JLPT December sitting — Dubai/Abu Dhabi test centre.', links:'https://www.jlpt.jp' },
+  { id:'t22', name:'AWS SAA-C03 Certification Exam',         cat:'aws',      pri:'high',   month:7,  hours:3,  done:false, date:'2026-12-19', notes:'', links:'' },
+  { id:'t23', name:'Linux: Networking & Firewall (UFW)',      cat:'linux',    pri:'medium', month:7,  hours:10, done:false, date:'', notes:'', links:'' },
+  // Month 8 — January 2027
+  { id:'t24', name:'Python: Infrastructure as Code (Boto3)', cat:'python',   pri:'high',   month:8,  hours:15, done:false, date:'', notes:'Automate AWS resource provisioning.', links:'https://boto3.amazonaws.com' },
+  { id:'t25', name:'Portfolio: Terraform Basic IaC Project', cat:'portfolio',pri:'medium', month:8,  hours:15, done:false, date:'', notes:'Deploy AWS infra with Terraform.', links:'https://terraform.io' },
+  { id:'t26', name:'Japanese: Genki II Chapters 1-6',        cat:'japanese', pri:'high',   month:8,  hours:18, done:false, date:'', notes:'Start N4 prep.', links:'' },
+  // Month 9 — February 2027
   { id:'t27', name:'Azure: Advanced Networking & Security',  cat:'azure',    pri:'medium', month:9,  hours:15, done:false, date:'', notes:'Firewall, WAF, Private Endpoints.', links:'' },
-  { id:'t28', name:'AWS: Advanced Services (Lambda, EKS)',   cat:'aws',      pri:'medium', month:9,  hours:15, done:false, date:'', notes:'', links:'' },
-  { id:'t29', name:'Portfolio: CI/CD Pipeline Project',     cat:'portfolio',pri:'high',   month:9,  hours:20, done:false, date:'', notes:'GitHub Actions + AWS CodeDeploy.', links:'' },
-  // Month 10
+  { id:'t28', name:'AWS: Advanced Services (Lambda, EKS)',    cat:'aws',      pri:'medium', month:9,  hours:15, done:false, date:'', notes:'', links:'' },
+  { id:'t29', name:'Portfolio: CI/CD Pipeline Project',      cat:'portfolio',pri:'high',   month:9,  hours:20, done:false, date:'', notes:'GitHub Actions + AWS CodeDeploy.', links:'' },
+  // Month 10 — March 2027
   { id:'t30', name:'Python: Monitoring & Alerting Scripts',  cat:'python',   pri:'medium', month:10, hours:12, done:false, date:'', notes:'CloudWatch integration.', links:'' },
-  { id:'t31', name:'Japanese: JLPT N5 Full Mock Exams',     cat:'japanese', pri:'high',   month:10, hours:15, done:false, date:'', notes:'Min 3 full mock exams.', links:'' },
-  { id:'t32', name:'Portfolio: Resume & LinkedIn Update',    cat:'portfolio',pri:'high',   month:10, hours:5,  done:false, date:'', notes:'Highlight certs and projects.', links:'' },
-  // Month 11
-  { id:'t33', name:'JLPT N5 Examination',                   cat:'japanese', pri:'high',   month:11, hours:1,  done:false, date:'', notes:'December exam (register by October).', links:'https://www.jlpt.jp' },
-  { id:'t34', name:'AWS: Cost Optimization & FinOps',       cat:'aws',      pri:'medium', month:11, hours:10, done:false, date:'', notes:'AWS Cost Explorer, Trusted Advisor.', links:'' },
-  { id:'t35', name:'Portfolio: Case Studies Documentation',  cat:'portfolio',pri:'medium', month:11, hours:10, done:false, date:'', notes:'Write up 3 project case studies.', links:'' },
-  // Month 12
-  { id:'t36', name:'Career Planning: Japan Job Market Research',cat:'portfolio',pri:'high',month:12, hours:8, done:false, date:'', notes:'IT roles, visa sponsorship, salary ranges in Japan.', links:'' },
-  { id:'t37', name:'Japanese: N4 Study Plan Setup',         cat:'japanese', pri:'medium', month:12, hours:10, done:false, date:'', notes:'Prepare for next year.', links:'' },
-  { id:'t38', name:'Portfolio: Final GitHub & Portfolio Review',cat:'portfolio',pri:'high',month:12, hours:8, done:false, date:'', notes:'Polish all repos, update README files.', links:'' },
+  { id:'t31', name:'Japanese: Genki II Chapters 7-12',       cat:'japanese', pri:'high',   month:10, hours:15, done:false, date:'', notes:'N4 vocabulary & grammar continued.', links:'' },
+  { id:'t32', name:'Portfolio: Resume & LinkedIn Update',     cat:'portfolio',pri:'high',   month:10, hours:5,  done:false, date:'', notes:'Highlight certs and projects.', links:'' },
+  // Month 11 — April 2027
+  { id:'t33', name:'AWS: Cost Optimization & FinOps',        cat:'aws',      pri:'medium', month:11, hours:10, done:false, date:'', notes:'AWS Cost Explorer, Trusted Advisor.', links:'' },
+  { id:'t34', name:'Portfolio: Case Studies Documentation',  cat:'portfolio',pri:'medium', month:11, hours:10, done:false, date:'', notes:'Write up 3 project case studies.', links:'' },
+  { id:'t35', name:'Japanese: JLPT N4 Mock Exams',           cat:'japanese', pri:'high',   month:11, hours:12, done:false, date:'', notes:'Prep for July 2027 JLPT N4.', links:'' },
+  // Month 12 — May 2027
+  { id:'t36', name:'Career Planning: Japan Job Market Research', cat:'portfolio',pri:'high', month:12, hours:8, done:false, date:'', notes:'IT roles, visa sponsorship, salary ranges in Japan.', links:'' },
+  { id:'t37', name:'Japanese: N4 Study Plan Consolidation',  cat:'japanese', pri:'medium', month:12, hours:10, done:false, date:'', notes:'Final revision before July JLPT N4.', links:'' },
+  { id:'t38', name:'Portfolio: Final GitHub & Portfolio Review', cat:'portfolio',pri:'high', month:12, hours:8, done:false, date:'', notes:'Polish all repos, update README files.', links:'' },
 ];
 
 /* ═══════════════════════════════════════════════════════════
@@ -1510,13 +1526,15 @@ function renderDashboard() {
   document.getElementById('statHours').textContent =
     state.tasks.filter(t => t.done).reduce((s,t) => s + (t.hours||0), 0) + 'h';
 
-  // This month (by calendar month)
-  const cm = now.getMonth() + 1;
+  // This month (by plan month — offset from June 2026)
+  const planStart = new Date(PLAN_START_YEAR, PLAN_START_MONTH, 1);
+  const diffMonths = (now.getFullYear() - planStart.getFullYear()) * 12 + (now.getMonth() - planStart.getMonth());
+  const cm = diffMonths + 1;
   const monthTasks = state.tasks.filter(t => t.month === cm);
   const monthDone  = monthTasks.filter(t => t.done).length;
   const monthPct   = monthTasks.length ? Math.round(monthDone/monthTasks.length*100) : 0;
   document.getElementById('statMonth').textContent = monthPct + '%';
-  document.getElementById('statMonthName').textContent = monthName;
+  document.getElementById('statMonthName').textContent = cm >= 1 && cm <= 12 ? planMonthName(cm) : monthName;
 
   // Ring
   const circ = 289;
@@ -1547,7 +1565,7 @@ function renderDashboard() {
       <div class="upcoming-dot" style="background:${CATS[t.cat]?.color||'#888'}"></div>
       <div class="upcoming-info">
         <div class="upcoming-name">${t.name}</div>
-        <div class="upcoming-meta">Month ${t.month} · ${CATS[t.cat]?.label}</div>
+        <div class="upcoming-meta">${planMonthName(t.month)} · ${CATS[t.cat]?.label}</div>
       </div>
       <div class="upcoming-hrs">${t.hours}h</div>
     </li>`).join('')
@@ -1586,7 +1604,7 @@ function renderWeeklyChart() {
   // Group completed hours by month
   const data = Array.from({length:6}, (_,i) => {
     const m = i + 1;
-    return { label: MONTHS[i].slice(0,3), val: state.tasks.filter(t => t.month === m && t.done).reduce((s,t) => s+(t.hours||0),0) };
+    return { label: planMonthShort(m), val: state.tasks.filter(t => t.month === m && t.done).reduce((s,t) => s+(t.hours||0),0) };
   });
   const max = Math.max(...data.map(d => d.val), 1);
   el.innerHTML = data.map(d => `
@@ -1632,7 +1650,7 @@ function renderTasks() {
     return `
       <div class="month-group">
         <div class="month-heading" onclick="toggleMonth(${m})">
-          <div class="month-name"><span class="month-num">M${String(m).padStart(2,'0')}</span>${MONTHS[m-1] || 'Month '+m}</div>
+          <div class="month-name"><span class="month-num">M${String(m).padStart(2,'0')}</span>${planMonthName(+m)}</div>
           <div class="month-progress-pill"><span class="month-progress-dot"></span>${done}/${tks.length} · ${pct}%</div>
           <div class="month-toggle open" id="mtoggle-${m}">▼</div>
         </div>
@@ -1872,14 +1890,13 @@ function renderProgress() {
   // Monthly completion
   const mEl = document.getElementById('monthlyCompletion');
   if (mEl) {
-    mEl.innerHTML = MONTHS.slice(0,12).map((name, i) => {
-      const m = i + 1;
+    mEl.innerHTML = Array.from({length:12},(_,i)=>i+1).map(m => {
       const t = state.tasks.filter(x => x.month === m);
       const d = t.filter(x => x.done).length;
       const p = t.length ? Math.round(d/t.length*100) : 0;
       return `<div class="progress-bar-wrap" style="margin-bottom:8px">
         <div class="progress-bar-label">
-          <span class="text-mono" style="font-size:0.65rem">M${String(m).padStart(2,'0')} ${name.slice(0,3)}</span>
+          <span class="text-mono" style="font-size:0.65rem">M${String(m).padStart(2,'0')} ${planMonthShort(m)}</span>
           <span class="text-mono" style="font-size:0.65rem">${d}/${t.length}</span>
         </div>
         <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${p}%"></div></div>
